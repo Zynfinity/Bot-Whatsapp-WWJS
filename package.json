@@ -1,0 +1,15 @@
+{
+  "name": "wpp-bot-whatsapp",
+  "version": "1.0.0",
+  "description": "bot whatsapp using wpp-connect library",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Fajar Ihsana (Zynfinity)",
+  "license": "ISC",
+  "dependencies": {
+    "@wppconnect-team/wppconnect": "^1.23.2",
+    "axios": "^1.4.0"
+  }
+}
