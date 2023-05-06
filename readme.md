@@ -1,5 +1,5 @@
 
-![Logo](https://telegra.ph/file/9d73f6b45de9006a0fcc6.png)
+![Logo](https://telegra.ph/file/8588a96e89190045f2960.png)
 
 
 # Bot Whatsapp WWJS
