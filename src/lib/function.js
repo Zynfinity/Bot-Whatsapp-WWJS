@@ -64,11 +64,11 @@ async function func(m, conn, zx) {
     }
     conn.ctwa = async (title, description, thumbnail, mediaUrl) => {
         if (!title && !description && !thumbnail && !mediaUrl) {
-            const thumb = await MessageMedia.fromUrl('https://img.freepik.com/free-vector/cute-robot-flying-cartoon-illustration-people-technology-icon-concept_138676-1892.jpg')
+            const thumb = await MessageMedia.fromUrl('https://telegra.ph/file/eaf9a8c93134706746f11.png')
             return ({
                 "ctwaContext": {
-                    title: '🤖  𝙕𝙓𝘽𝙊𝙏 𝙈𝙐𝙇𝙏𝙄𝘿𝙀𝙑𝙄𝘾𝙀',
-                    description: `Whatsapp-Web Version : ${await conn.getWWebVersion()}`,
+                    title: '🤖  Simple Whatsapp-Bot',
+                    description: `WWJS Version : ${await conn.getWWebVersion()}`,
                     thumbnail: thumb.data,
                     mediaType: 2,
                     mediaUrl: 'https://youtube.com/watch?v=XB5mB1WuzbM'
@@ -128,7 +128,6 @@ fs.watchFile(file, () => {
     fs.unwatchFile(file);
     console.log("Update 'function.js'");
     delete require.cache[file];
-    if (global.reload) console.log(global.reload());
 });
 
 module.exports = func

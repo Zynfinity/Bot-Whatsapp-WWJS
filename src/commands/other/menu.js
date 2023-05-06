@@ -1,3 +1,4 @@
+const { MessageMedia } = require('whatsapp-web.js')
 module.exports = {
     name: ['menu'],
     cmd: ['menu'],
@@ -22,6 +23,14 @@ module.exports = {
             cmdName.map(cmd => teks += `    - ${cmd}\n`)
             teks += '\n'
         }
-        m.reply(teks)
+        // m.reply(teks)
+        fek = await conn.ctwa()
+        fek.isForwarded = true
+        fek.forwardingScore = 999
+        const thumb = await MessageMedia.fromFilePath('./src/media/thumb.png')
+        await conn.sendMessage(m.from, teks, {
+            quotedMessageId: m.msgId,
+            extra: fek
+        })
     }
 }

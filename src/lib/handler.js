@@ -51,15 +51,6 @@ async function handler(m, conn) {
         conn,
         prefix
     }
-    m.reply = async (text, option) => {
-        if (typeof text == 'string') {
-            return await conn.sendMessage(m.from, text, { ...option, quotedMessageId: m.msgId, extra: { isForwarded: true, forwardingScore: 999 } })
-        } else {
-            ren = JSON.stringify(text, null, 2)
-            pes = util.format(ren)
-            return await conn.sendMessage(m.from, pes, { ...option, quotedMessageId: m.msgId, extra: { isForwarded: true, forwardingScore: 999 } })
-        }
-    }
     console.log({ m, budy, body, command, extra })
     if (budy.startsWith('<')) {
         const ev = await eval(`(async () => { ${budy.slice(2)} })()`)
