@@ -1,6 +1,7 @@
 module.exports = {
-    name: 'owner',
+    name: ['owner'],
     cmd: ['owner'],
+    tag: 'other',
     desc: 'Get the owner of a bot',
     async execute(m, { client }) {
         client.sendContactVcard(m.from, '6289506883380@c.us', 'Zynfinity').then(res => {

@@ -1,29 +1,79 @@
 const util = require('util')
 
-async function handler(client, m) {
+async function handler(m, conn) {
     const prefix = '.'
-    const budy = m.type == 'chat' ? m.body : m.caption || ''
-    const body = budy.startsWith(prefix) ? budy : ''
-    const command = body.slice(1) || ''
-    m.reply = async (text) => {
-        if (typeof text == 'string') return await client.reply(m.from, text, m.id)
-        else {
+    const tchat = await m.getChat()
+    require('./function')(m, conn, tchat)
+    const {
+        _data,
+        caption,
+        mediaKey,
+        id,
+        ack,
+        hasMedia,
+        body,
+        type,
+        timestamp,
+        from,
+        to,
+        author,
+        deviceType,
+        isForwarded,
+        forwardingScore,
+        isStatus,
+        isStarred,
+        broadcast,
+        fromMe,
+        hasQuotedMsg,
+        duration,
+        location,
+        vCards,
+        inviteV4,
+        mentionedIds,
+        orderId,
+        token,
+        isGif,
+        isEphemeral,
+        links,
+        isUrl
+    } = m
+    const budy = (type === 'chat') ? body : (((type === 'image' || type === 'video') && body)) ? body : type === 'list_response' ? m.selectedRowId : ''
+    const chats = type === 'list_response' ? m.selectedRowId : (type === 'chat' && body.startsWith(prefix)) ? body : (((type === 'image' || type === 'video') && body) && body.startsWith(prefix)) ? body : ''
+    const command = chats.toLowerCase().split(" ")[0].slice(1) || ''
+    const args = chats.trim().split(/ +/).slice(1);
+    const q = args.join(" ");
+    const extra = {
+        budy,
+        body,
+        q,
+        text: q,
+        command,
+        conn,
+        prefix
+    }
+    m.reply = async (text, option) => {
+        if (typeof text == 'string') {
+            return await conn.sendMessage(m.from, text, { ...option, quotedMessageId: m.msgId, extra: { isForwarded: true, forwardingScore: 999 } })
+        } else {
             ren = JSON.stringify(text, null, 2)
             pes = util.format(ren)
-            return await client.reply(m.from, pes, m.id)
+            return await conn.sendMessage(m.from, pes, { ...option, quotedMessageId: m.msgId, extra: { isForwarded: true, forwardingScore: 999 } })
         }
     }
-    console.log({ m, budy, body, command })
+    console.log({ m, budy, body, command, extra })
     if (budy.startsWith('<')) {
-        await client.reply(
-            m.from,
-            await require("util").format(eval(`(async () => { ${budy.slice(2)} })()`)),
-            m.id.toString()
-        );
+        const ev = await eval(`(async () => { ${budy.slice(2)} })()`)
+        // console.log(ev)
+        await m.reply(await require("util").format(ev));
     }
     const cmd = await Object.values(commands).find(s => s.cmd.find(res => res == command))
+    console.log(cmd)
     if (!cmd) return
-    await cmd.execute(m, { client })
+    try {
+        await cmd.execute(m, extra)
+    } catch (e) {
+        m.reply(String(e))
+    }
 
 }
 module.exports = handler

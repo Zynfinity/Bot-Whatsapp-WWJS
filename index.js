@@ -1,56 +1,68 @@
-const wppconnect = require('@wppconnect-team/wppconnect');
+const {
+  Client,
+  LocalAuth
+} = require('whatsapp-web.js');
+const chokidar = require('chokidar')
+const syntaxerror = require("syntax-error");
+const qrcode = require('qrcode-terminal')
+const path = require('path')
+const fs = require('fs')
 const handler = require('./src/lib/handler')
 
 global.commands = {}
+global.owner = '6289506883380@c.us'
 //create clint using wppconnect?
 
-wppconnect.create({
-  session: 'bot-wa-wpp', //Pass the name of the client you want to start the bot
-  puppeteerOptions: {
-    userDataDir: './tokens/multidevice', // or your custom directory
-  },
-  catchQR: (base64Qrimg, asciiQR, attempts, urlCode) => {
-    console.log('Number of attempts to read the qrcode: ', attempts);
-    console.lohg(asciiQR);
-    //   console.log('base64 image string qrcode: ', base64Qrimg);
-    //   console.log('urlCode (data-ref): ', urlCode);
-  },
-  statusFind: (statusSession, session) => {
-    console.log('Status Session: ', statusSession); //return isLogged || notLogged || browserClose || qrReadSuccess || qrReadFail || autocloseCalled || desconnectedMobile || deleteToken
-    //Create session wss return "serverClose" case server for close
-    console.log('Session name: ', session);
-  },
-  onLoadingScreen: (percent, message) => {
-    console.log('LOADING_SCREEN', percent, message);
-  },
-  headless: true, // Headless chrome
-  devtools: false, // Open devtools by default
-  useChrome: true, // If false will use Chromium instance
-  debug: false, // Opens a debug session
-  logQR: true, // Logs QR automatically in terminal
-  browserWS: '', // If u want to use browserWSEndpoint
-  browserArgs: [''], // Parameters to be added into the chrome browser instance
-  puppeteerOptions: {}, // Will be passed to puppeteer.launch
-  disableWelcome: false, // Option to disable the welcoming message which appears in the beginning
-  updatesLog: false, // Logs info updates automatically in terminal
-  autoClose: 60000, // Automatically closes the wppconnect only when scanning the QR code (default 60 seconds, if you want to turn it off, assign 0 or false)
-  tokenStore: 'file', // Define how work with tokens, that can be a custom interface
-  folderNameToken: './tokens', //folder name when saving tokens
-  // BrowserSessionToken
-  // To receive the client's token use the function await clinet.getSessionTokenBrowser()
-  sessionToken: {
-    WABrowserId: '"UnXjH....."',
-    WASecretBundle: '{"key":"+i/nRgWJ....","encKey":"kGdMR5t....","macKey":"+i/nRgW...."}',
-    WAToken1: '"0i8...."',
-    WAToken2: '"1@lPpzwC...."',
+async function start() {
+  console.log('Welcome To ZXBOT')
+  console.log('Please wait, Starting Bot...')
+  const worker = `./session_data/session/Default/Service Worker`;
+  if (fs.existsSync(worker)) {
+    fs.rmSync(worker, { recursive: true });
   }
-}).then((client) => start(client))
-  .catch((error) => console.log(error));
-
+  const client = await new Client({
+    authStrategy: new LocalAuth({
+      dataPath: `./session_data`
+    }),
+    puppeteer: {
+      headless: true,
+      executablePath: 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe',
+      args: [
+        '--no-sandbox',
+        '--disable-gpu-sandbox',
+        '--disable-dev-shm-usage',
+        '--disable-features=IsolateOrigins,site-per-process',
+      ],
+      exitOnPageError: false,
+    }
+  });
+  client.initialize().then(async re => console.log(re))
+  client.on('change_state', async msg => {
+    console.log(msg)
+    if (msg == 'CONNECTED') {
+      //
+    }
+  })
+  client.on('qr', (qr) => {
+    // Generate and scan this code with your phone
+    qrcode.generate(qr, {
+      small: true
+    }, function (qrcode) {
+      console.log(qrcode)
+    });
+    console.log('Scan Qr Code');
+  });
+  client.on('ready', async () => {
+    console.log('Bot is ready!');
+    console.log('Whatsapp-Web Version : ' + await client.getWWebVersion())
+    client.sendMessage(owner, JSON.stringify(client.info, null, 2))
+  });
+  client.on('message', async msg => {
+    await require('./src/lib/handler')(msg, client)
+  });
+}
 async function loadCommands() {
   console.log('Commands')
-  const path = require('path')
-  const fs = require('fs')
   pluginFolder = path.join(__dirname, 'src/commands')
   for (let folderName of fs.readdirSync(pluginFolder)) {
     console.log(folderName + ' ✓')
@@ -61,7 +73,54 @@ async function loadCommands() {
   }
   console.log('Commands loaded succsessfully')
 }
-async function start(client) {
-  loadCommands()
-  client.onMessage(async (message) => await handler(client, message))
-}
+
+// reload
+
+let pluginFilter = (filename) => /\.js$/.test(filename);
+let pluginFolder = path.join(__dirname, "src/commands");
+global.reload = (folder) => {
+  folder = `./${folder.replace(/\\/g, '/')}`
+  filename = folder.split("/")[4]
+  if (pluginFilter(filename)) {
+    let dir = path.join(pluginFolder, './' + folder.split('/')[3] + '/' + filename)
+    console.log({ folder, filename, dir })
+    isi = require(folder)
+    if (dir in require.cache) {
+      delete require.cache[dir];
+      if (fs.existsSync(dir)) console.info(`re - require plugin '${folder}'`);
+      else {
+        console.log(`deleted plugin '${folder}'`);
+        return isi.function
+          ? delete global.functions[filename]
+          : delete global.commands[filename];
+      }
+    } else console.info(`requiring new plugin '${filename}'`);
+    let err = syntaxerror(fs.readFileSync(dir), filename);
+    if (err) console.log(`syntax error while loading '${filename}'\n${err}`);
+    else
+      try {
+        isi.function
+          ? (global.functions[filename] = require(dir))
+          : (global.commands[filename] = require(dir));
+      } catch (e) {
+        console.log(e);
+      } finally {
+        isi.function
+          ? (global.functions = Object.fromEntries(
+            Object.entries(global.functions).sort(([a], [b]) => a.localeCompare(b))
+          ))
+          : (global.commands = Object.fromEntries(
+            Object.entries(global.commands).sort(([a], [b]) => a.localeCompare(b))
+          ));
+      }
+  }
+};
+
+var watcher = chokidar.watch('./src/commands', { ignored: /^\./, persistent: true });
+watcher
+  .on('error', function (error) { console.error('Error happened', error); })
+  .on('add', function (path) { global.reload(path) })
+  .on('change', function (path) { global.reload(path) })
+  .on('unlink', function (path) { global.reload(path) })
+
+start()
