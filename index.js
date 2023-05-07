@@ -11,6 +11,7 @@ const handler = require('./src/lib/handler')
 
 global.commands = {}
 global.owner = '6289506883380@c.us'
+global.config = require('./config')
 //create clint using wppconnect?
 
 async function start() {

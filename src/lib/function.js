@@ -64,7 +64,7 @@ async function func(m, conn, zx) {
     }
     conn.ctwa = async (title, description, thumbnail, mediaUrl) => {
         if (!title && !description && !thumbnail && !mediaUrl) {
-            const thumb = await MessageMedia.fromUrl('https://telegra.ph/file/eaf9a8c93134706746f11.png')
+            const thumb = await MessageMedia.fromUrl('https://telegra.ph/file/8588a96e89190045f2960.png')
             return ({
                 "ctwaContext": {
                     title: '🤖  Simple Whatsapp-Bot',
@@ -115,8 +115,8 @@ async function func(m, conn, zx) {
         const send = await conn.sendMessage(from, media, { ...option, extra: option && option.ctwa ? option.ctwa.type == 'link' ? ctwa : option.ctwa.data : '' })
         return send
     }
-    conn.sendSticker = async (anu, sticker, pack, author, option) => {
-        anu.sendMessage(sticker, { ...option, sendMediaAsSticker: true, stickerName: pack, stickerAuthor: author, extra: option && option.ctwa ? option.ctwa.type == 'link' ? ctwa : option.ctwa.data : '' })
+    conn.sendSticker = async (from, sticker, pack, author, option) => {
+        conn.sendMessage(m.from, sticker, { ...option, sendMediaAsSticker: true, stickerName: pack, stickerAuthor: author, extra: option && option.ctwa ? option.ctwa.type == 'link' ? ctwa : option.ctwa.data : '' })
     }
     conn.sendStickerFromUrl = async (from, url, pack, author, option) => {
         const media = await MessageMedia.fromUrl(url, { unsafeMime: true });

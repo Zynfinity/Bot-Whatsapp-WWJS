@@ -1,0 +1,20 @@
+{
+    "owner": "6289506883380@c.us",
+    "stickerMetadata": {
+        "stickerAuthor": "Zynfinity",
+        "stickerName": "Simple Whatsapp Bot"
+    },
+    "StickerMetadatacrop": {
+        "author": "Zynfinity",
+        "pack": "Simple Whatsapp Bot",
+        "keepScale": false
+    },
+    "gifcrop": {
+        "crop": true,
+        "square": 240,
+        "fps": 30,
+        "loop": 0,
+        "startTime": "00:00:00.0",
+        "endTime": "00:00:10.0"
+    }
+}
