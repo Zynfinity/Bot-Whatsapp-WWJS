@@ -14,7 +14,6 @@ const require = createRequire(import.meta.url)
 global.config = JSON.parse(fs.readFileSync('./config.json'))
 
 global.commands = {}
-global.owner = '6289506883380@c.us'
 //create clint using wppconnect?
 
 async function start() {
@@ -59,7 +58,7 @@ async function start() {
   client.on('ready', async () => {
     console.log('Bot is ready!');
     console.log('Whatsapp-Web Version : ' + await client.getWWebVersion())
-    client.sendMessage(owner, JSON.stringify(client.info, null, 2))
+    client.sendMessage(config.owner, JSON.stringify(client.info, null, 2))
   });
   client.on('message', async msg => {
     await handler(msg, client)

@@ -49,7 +49,7 @@ async function handler(m, conn) {
     const command = chats.toLowerCase().split(" ")[0].slice(1) || ''
     const args = chats.trim().split(/ +/).slice(1);
     const q = args.join(" ");
-    const isOwner = owner.includes(tchat.isGroup ? m.author : m.from);
+    const isOwner = config.owner.includes(tchat.isGroup ? m.author : m.from);
     // if (conn.mode == 'self' && !isOwner) return
     const admin = tchat.isGroup ? tchat.participants.filter(s => s.isAdmin).map(s => s.id._serialized) : {}
     const isAdmin = tchat.isGroup ? admin.includes(m.author) : false;
