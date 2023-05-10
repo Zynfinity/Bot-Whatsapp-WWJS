@@ -12,6 +12,7 @@ async function download(url) {
     try {
         const form = new FormData()
         form.append('url', url)
+        console.log(await form.getHeaders())
         const { data, status } = await axios.post('https://spotifymate.com/action', form)
         if (data == 'error_url') {
             return ({
@@ -53,6 +54,7 @@ async function search(query) {
         result.push({
             judul: i.name,
             artist: i.artists,
+            album: i.album.name,
             release_date: i.album.release_date,
             popularity: i.popularity,
             track: i.external_urls.spotify,

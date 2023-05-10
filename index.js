@@ -1,17 +1,20 @@
-const {
-  Client,
-  LocalAuth
-} = require('whatsapp-web.js');
-const chokidar = require('chokidar')
-const syntaxerror = require("syntax-error");
-const qrcode = require('qrcode-terminal')
-const path = require('path')
-const fs = require('fs')
-const handler = require('./src/lib/handler')
+import wa from 'whatsapp-web.js'
+const { Client, LocalAuth } = wa
+import chokidar from 'chokidar'
+import syntaxerror from "syntax-error"
+import qrcode from 'qrcode-terminal'
+import path from 'path'
+import fs from 'fs'
+import handler from './src/lib/handler.js'
+import * as url from 'url';
+const __filename = url.fileURLToPath(import.meta.url);
+const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+import { createRequire } from 'module'
+const require = createRequire(import.meta.url)
+global.config = JSON.parse(fs.readFileSync('./config.json'))
 
 global.commands = {}
 global.owner = '6289506883380@c.us'
-global.config = require('./config')
 //create clint using wppconnect?
 
 async function start() {
@@ -59,7 +62,7 @@ async function start() {
     client.sendMessage(owner, JSON.stringify(client.info, null, 2))
   });
   client.on('message', async msg => {
-    await require('./src/lib/handler')(msg, client)
+    await handler(msg, client)
   });
 }
 async function loadCommands() {
@@ -76,43 +79,34 @@ async function loadCommands() {
 }
 
 // reload
-
-let pluginFilter = (filename) => /\.js$/.test(filename);
+let pluginFilter = (filename) => /\.cjs$/.test(filename);
 let pluginFolder = path.join(__dirname, "src/commands");
-global.reload = (folder) => {
+global.reload = async (folder) => {
   folder = `./${folder.replace(/\\/g, '/')}`
-  filename = folder.split("/")[4]
+  let filename = folder.split("/")[4]
   if (pluginFilter(filename)) {
     let dir = path.join(pluginFolder, './' + folder.split('/')[3] + '/' + filename)
     console.log({ folder, filename, dir })
-    isi = require(folder)
+    let isi = (await import(folder)).default
     if (dir in require.cache) {
       delete require.cache[dir];
       if (fs.existsSync(dir)) console.info(`re - require plugin '${folder}'`);
       else {
         console.log(`deleted plugin '${folder}'`);
-        return isi.function
-          ? delete global.functions[filename]
-          : delete global.commands[filename];
+        return delete global.commands[filename];
       }
     } else console.info(`requiring new plugin '${filename}'`);
     let err = syntaxerror(fs.readFileSync(dir), filename);
     if (err) console.log(`syntax error while loading '${filename}'\n${err}`);
     else
       try {
-        isi.function
-          ? (global.functions[filename] = require(dir))
-          : (global.commands[filename] = require(dir));
+        global.commands[filename] = isi;
       } catch (e) {
         console.log(e);
       } finally {
-        isi.function
-          ? (global.functions = Object.fromEntries(
-            Object.entries(global.functions).sort(([a], [b]) => a.localeCompare(b))
-          ))
-          : (global.commands = Object.fromEntries(
-            Object.entries(global.commands).sort(([a], [b]) => a.localeCompare(b))
-          ));
+        global.commands = Object.fromEntries(
+          Object.entries(global.commands).sort(([a], [b]) => a.localeCompare(b))
+        );
       }
   }
 };

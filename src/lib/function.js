@@ -1,6 +1,7 @@
-const { MessageMedia, List } = require("whatsapp-web.js");
-const util = require('util')
-const fs = require("fs");
+import wa from 'whatsapp-web.js'
+const { MessageMedia, List } = wa
+import util from 'util'
+import fs from 'fs'
 const ctwa = {
     "ctwaContext": {
         "sourceUrl": "https://chat.whatsapp.com/CGMJD56YU2w4v1q5kvuyKg",
@@ -30,12 +31,12 @@ async function func(m, conn, zx) {
         return [...text.matchAll(/@([0-9]{5,16}|0)/g)].map(v => v[1] + '@c.us')
     }
     m.download = async () => {
-        media = await m.downloadMedia()
+        const media = await m.downloadMedia()
         return media == undefined ? 'No media detected' : await Buffer.from(media.data, 'base64')
     }
     m.quoted.download = async () => {
-        quot = await m.getQuotedMessage()
-        media = await quot.downloadMedia()
+        const quot = await m.getQuotedMessage()
+        const media = await quot.downloadMedia()
         return media == undefined ? 'No media detected' : await Buffer.from(media.data, 'base64')
     }
     m.quoted.forward = async (to) => {
@@ -53,15 +54,27 @@ async function func(m, conn, zx) {
     conn.sendText = async (from, text, option) => {
         conn.sendMessage(from, text, { ...option })
     }
-    m.reply = async (text, option) => {
-        if (typeof text == 'string') {
-            return await conn.sendMessage(m.from, text, { ...option, quotedMessageId: m.msgId, extra: { isForwarded: true, forwardingScore: 999 } })
-        } else {
-            ren = JSON.stringify(text, null, 2)
-            pes = util.format(ren)
-            return await conn.sendMessage(m.from, pes, { ...option, quotedMessageId: m.msgId, extra: { ...ctwa, isForwarded: true, forwardingScore: 999 } })
-        }
-    }
+    // m.reply = async (text, option) => {
+    //     if (typeof text == 'string') {
+    //         return await conn.sendMessage(m.from, text, { ...option, quotedMessageId: m.msgId, extra: { isForwarded: true, forwardingScore: 999 } })
+    //     } else {
+    //         ren = JSON.stringify(text, null, 2)
+    //         pes = util.format(ren)
+    //         return await conn.sendMessage(m.from, pes, { ...option, quotedMessageId: m.msgId, extra: { ...ctwa, isForwarded: true, forwardingScore: 999 } })
+    //     }
+    // }
+    // m.reply = async (content, chatId, options = {}) => {
+    //     if (!chatId) {
+    //         chatId = m.from
+    //     }
+
+    //     options = {
+    //         ...options,
+    //         quotedMessageId: m.id._serialized
+    //     };
+
+    //     return conn.sendMessage(chatId, content, options);
+    // }
     conn.ctwa = async (title, description, thumbnail, mediaUrl) => {
         if (!title && !description && !thumbnail && !mediaUrl) {
             const thumb = await MessageMedia.fromUrl('https://telegra.ph/file/8588a96e89190045f2960.png')
@@ -86,10 +99,10 @@ async function func(m, conn, zx) {
         })
     }
     conn.mentions = async (from, text, option) => {
-        tag = []
-        tagg = await m.parseMention(text)
+        let tag = []
+        let tagg = await m.parseMention(text)
         for (let i of tagg) {
-            con = await conn.getContactById(i)
+            let con = await conn.getContactById(i)
             tag.push(con)
         }
         return await conn.sendMessage(from, text, { ...option, mentions: tag, extra: { ...ctwa } })
@@ -102,7 +115,7 @@ async function func(m, conn, zx) {
     conn.sendFileFromUrl = async (from, url, option, option1) => {
         const media = await MessageMedia.fromUrl(url, { ...option1, unsafeMime: true });
         option1 ? option1.mimetype ? media.mimetype = option1.mimetype : {} : {}
-        send = await conn.sendMessage(from, media, { ...option, extra: option && option.ctwa ? option.ctwa.type == 'link' ? ctwa : option.ctwa.data : '' });
+        const send = await conn.sendMessage(from, media, { ...option, extra: option && option.ctwa ? option.ctwa.type == 'link' ? ctwa : option.ctwa.data : '' });
         return send
     };
     conn.sendFileFromBuffer = async (from, buffer, option) => {
@@ -123,11 +136,4 @@ async function func(m, conn, zx) {
         conn.sendMessage(from, media, { ...option, sendMediaAsSticker: true, stickerName: pack, stickerAuthor: author, extra: option && option.ctwa ? option.ctwa.type == 'link' ? ctwa : option.ctwa.data : '' })
     }
 }
-let file = require.resolve(__filename);
-fs.watchFile(file, () => {
-    fs.unwatchFile(file);
-    console.log("Update 'function.js'");
-    delete require.cache[file];
-});
-
-module.exports = func
+export default func

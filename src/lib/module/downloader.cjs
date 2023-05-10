@@ -18,9 +18,12 @@ async function tiktok(url) {
             isSlide: $('div').text().includes('WITH WATERMARK') ? false : true
         }
         if (result.isSlide) {
-            result.download = []
+            result.download = {
+                music: `https://sf16-ies-music.tiktokcdn.com/obj/ies-music-aiso/${$('div').find('#unique-id').attr('value').split('-')[1]}.mp3`,
+                image: []
+            }
             $('#button-download-ready > a').each(function () {
-                result.download.push($(this).attr('href'))
+                result.download.image.push($(this).attr('href'))
             })
         } else {
             result.download = {
@@ -31,6 +34,7 @@ async function tiktok(url) {
         }
         return (result)
     } catch (e) {
+        console.log(e)
         if (e.response.status == 404) return ({ status: e.response.status, message: 'Video not found!' })
     }
 }

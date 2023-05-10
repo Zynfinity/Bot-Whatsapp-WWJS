@@ -1,11 +1,15 @@
-const util = require('util')
-const chalk = require('chalk')
-const moment = require("moment-timezone");
+import util from 'util'
+import chalk from 'chalk'
+import moment from "moment-timezone"
+import functions from "./function.js"
+import { exec } from 'child_process'
+import axios from 'axios'
+import cheerio from 'cheerio'
 async function handler(m, conn) {
     const prefix = '.'
     global.shp = '+'
     const tchat = await m.getChat()
-    require('./function')(m, conn, tchat)
+    functions(m, conn, tchat)
     const {
         _data,
         caption,
@@ -39,6 +43,7 @@ async function handler(m, conn) {
         links,
         isUrl
     } = m
+    // return
     const budy = (type === 'chat') ? body : (((type === 'image' || type === 'video') && body)) ? body : type === 'list_response' ? m.selectedRowId : ''
     const chats = type === 'list_response' ? m.selectedRowId : (type === 'chat' && body.startsWith(prefix)) ? body : (((type === 'image' || type === 'video') && body) && body.startsWith(prefix)) ? body : ''
     const command = chats.toLowerCase().split(" ")[0].slice(1) || ''
@@ -74,9 +79,22 @@ async function handler(m, conn) {
         }
     }
     if (budy.startsWith('<')) {
+        try {
+            if (!isOwner) return m.reply(mess.fail.owner)
+            const ev = await eval(`(async () => { ${budy.slice(2)} })()`)
+            await m.reply(await util.format(ev));
+        } catch (e) {
+            m.reply(String(e))
+        }
+    }
+    if (budy.startsWith('$')) {
         if (!isOwner) return m.reply(mess.fail.owner)
-        const ev = await eval(`(async () => { ${budy.slice(2)} })()`)
-        await m.reply(await require("util").format(ev));
+        console.log("E X E C")
+        if (!budy.slice(2)) return await m.reply('Masukkan Codenya!')
+        exec(budy.slice(2), async (err, stdout) => {
+            if (err) return await m.reply(String(err))
+            await m.reply(stdout)
+        })
     }
     const cmd = await Object.values(commands).find(s => s.cmd.find(res => res == command))
     if (!cmd) return
@@ -89,7 +107,7 @@ async function handler(m, conn) {
             .format("DD/MM/YY HH:mm:ss")) + " " + chalk.red("[ P U B L I C ]") + " " + chalk.cyanBright(m.type) + ": " + chalk.yellowBright(` from: ${m._data.notifyName} In ${tchat.isGroup ? tchat.name : 'Private Chat'}`) + " chat: " + chalk.greenBright(logg));
     }
     async function error(command, err, msg) {
-        eror = `Fitur Error\n\n`
+        let eror = `Fitur Error\n\n`
         eror += `+ command : ${command}\n\n`
         eror += `Error Log\n\n`
         eror += String(err)
@@ -116,4 +134,4 @@ async function handler(m, conn) {
     }
 
 }
-module.exports = handler
+export default handler
