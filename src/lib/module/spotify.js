@@ -1,7 +1,7 @@
-const Spotify = require('spotify-finder')
-const axios = require('axios')
-const cheerio = require('cheerio')
-const FormData = require('form-data');
+import Spotify from 'spotify-finder';
+import axios from "axios";
+import cheerio from "cheerio";
+import FormData from 'form-data';
 const client = new Spotify({
     consumer: {
         key: '271f6e790fb943cdb34679a4adcc34cc', // from v2.1.0 is required
@@ -12,7 +12,6 @@ async function download(url) {
     try {
         const form = new FormData()
         form.append('url', url)
-        console.log(await form.getHeaders())
         const { data, status } = await axios.post('https://spotifymate.com/action', form)
         if (data == 'error_url') {
             return ({
@@ -35,13 +34,13 @@ async function download(url) {
     }
 }
 async function search(query) {
-    data = await client.search({
+    const data = await client.search({
         q: query,
         type: 'track',
         limit: 10
     })
-    peta = data.tracks.items
-    artis = []
+    const peta = data.tracks.items
+    const artis = []
     const result = []
     if (peta == undefined) return ({ status: false, message: 'Song not found!' })
     /*peta.artists.map(s => {
@@ -66,4 +65,4 @@ async function search(query) {
         result: result
     } : { status: false, message: 'Song Not Found' })
 }
-module.exports = { search, download }
+export { search, download }

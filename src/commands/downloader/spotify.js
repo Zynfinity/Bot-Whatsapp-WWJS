@@ -1,8 +1,8 @@
-const { MessageMedia } = require("whatsapp-web.js");
-const { search, download } = require("../../lib/module/spotify.cjs");
-const { parseResult } = require("../../lib/module/tools.cjs");
-const { default: axios } = require("axios");
-module.exports = {
+const { MessageMedia } = import('whatsapp-web.js')
+import { search, download } from "../../lib/module/spotify.js";
+import { parseResult } from "../../lib/module/tools.js";
+import axios from "axios";
+export default {
     name: ['spotify'],
     help: '<query/link>',
     cmd: ['spotify'],
@@ -15,11 +15,10 @@ module.exports = {
         if (!spotifySearch.status) return m.reply('Lagu tidak ditemukan!')
         let res = spotifySearch.result[0];
         res.artist = res.artist[0].name;
-        const { data } = await axios.get(`https://web-production-6856.up.railway.app/download?url=${res.track}`)
-
-        if (!data.status) return m.reply('Lagu tidak ditemukan!')
-        const audio = await new MessageMedia('audio/mp3', data.base64, 'audio.mp3')
+        const spotifyDl = await download(res.track)
+        if (spotifyDl.status == 404) return m.reply('Lagu tidak ditemukan!')
         await conn.sendFileFromUrl(m.from, res.thumbnail, { caption: await parseResult("SPOTIFY PLAY", res, { delete: ["thumbnail"] }), quotedMessageId: m.msgId });
-        await m.reply(audio)
+        // await m.reply(audio)
+        await conn.sendFileFromUrl(m.from, spotifyDl.link, { quotedMessageId: m.msgId })
     }
 }

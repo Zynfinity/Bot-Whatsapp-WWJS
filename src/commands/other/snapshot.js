@@ -1,5 +1,5 @@
-const { MessageMedia } = require('whatsapp-web.js')
-module.exports = {
+const { MessageMedia } = import('whatsapp-web.js')
+export default {
     name: ['snap'],
     cmd: ['snap', 'ss'],
     tag: 'other',

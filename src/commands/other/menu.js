@@ -1,5 +1,4 @@
-const { MessageMedia } = require('whatsapp-web.js')
-module.exports = {
+export default {
     name: ['menu'],
     cmd: ['menu', 'help'],
     tag: 'other',
@@ -26,7 +25,7 @@ module.exports = {
             }
             teks += `\n_*Note : Ketik .help <command> untuk melihat info command_\n_Berikan jeda 5 detik dalam memakai bot_`
             // m.reply(teks)
-            fek = await conn.ctwa()
+            let fek = await conn.ctwa()
             fek.isForwarded = true
             await conn.sendMessage(m.from, teks, {
                 quotedMessageId: m.msgId,

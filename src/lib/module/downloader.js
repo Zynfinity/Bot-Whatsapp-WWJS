@@ -1,5 +1,6 @@
-const axios = require('axios')
-const cheerio = require('cheerio')
+import axios from "axios";
+import cheerio from "cheerio";
+
 async function tiktok(url) {
     const base = await axios.get('https://ttsave.app/download-tiktok-slide')
     const key = base.data.split('https://ttsave.app/download?mode=slide&key=')[1].split(`',`)[0]
@@ -38,4 +39,4 @@ async function tiktok(url) {
         if (e.response.status == 404) return ({ status: e.response.status, message: 'Video not found!' })
     }
 }
-module.exports = { tiktok }
+export { tiktok }

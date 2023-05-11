@@ -1,4 +1,4 @@
-module.exports = {
+export default {
     name: ['q'],
     help: '<reply chat>',
     cmd: ['q'],

@@ -96,7 +96,7 @@ async function handler(m, conn) {
             await m.reply(stdout)
         })
     }
-    const cmd = await Object.values(commands).find(s => s.cmd.find(res => res == command))
+    const cmd = await Object.values(commands).find(s => s && s.cmd.find(res => res == command))
     if (!cmd) return
 
     //check requirement
@@ -114,7 +114,7 @@ async function handler(m, conn) {
         if (String(err).includes("Cannot read property 'data' of undefined")) return m.reply('no media found, please resend the media')
         if (String(err).includes("(reading 'mediaData')")) return m.reply('Error, silahkan kirim ulang media, lalu ulangi commandnya!')
         else m.reply(mess.error)
-        conn.sendText(owner, eror, { quotedMessageId: msg.msgId });
+        conn.sendText(config.owner, eror, { quotedMessageId: msg.msgId });
     }
     async function sfail(m, p) {
         await m.reply(mess.fail[p]);
