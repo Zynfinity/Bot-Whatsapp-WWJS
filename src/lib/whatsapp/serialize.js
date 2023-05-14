@@ -6,23 +6,6 @@ class Client extends _Client {
     constructor(...args) {
         super(...args)
     }
-    // async sendCall(chatId, options = {}) {
-    //     const start = await this.pupPage.evaluate((chatId) => {
-    //         return window.WWebJS.call.start(chatId)
-    //     })
-    // }
-    // /**
-    //  *
-    //  * @param {string} chatId
-    //  * @returns {Promise<Boolean>}
-    //  */
-    // async endCall(chatId) {
-    //     const end = await this.pupPage.evaluate((chatId) => {
-    //         return window.WWebJS.call.end(chatId);
-    //     }, chatId);
-    //     if (!end) return false;
-    //     return true;
-    // }
     async ctwa(title, description, thumbnail, mediaUrl) {
         if (!title && !description && !thumbnail && !mediaUrl) {
             const thumb = await MessageMedia.fromUrl('https://telegra.ph/file/8588a96e89190045f2960.png')
