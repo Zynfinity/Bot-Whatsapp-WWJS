@@ -1,6 +1,6 @@
 export default {
     name: ['sticker'],
-    help: '<reply/send image>',
+    help: '[reply/send image]',
     cmd: ['sticker', 's', 'stiker'],
     tag: 'convert',
     desc: 'Mengubah gambar menjadi stiker',

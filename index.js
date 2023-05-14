@@ -4,7 +4,6 @@ import { Client } from './src/lib/whatsapp/serialize.js'
 import chokidar from 'chokidar';
 import syntaxerror from "syntax-error";
 import qrcode from 'qrcode-terminal';
-import path from 'path';
 import fs from 'fs';
 import { platform } from 'os';
 import handler from './src/lib/handler.js';
@@ -63,18 +62,21 @@ var watcher = chokidar.watch('./src/commands', { ignored: /^\./, persistent: tru
 watcher
   .on('error', function (error) { console.error('Error happened', error); })
   .on('add', async function (pathh) {
-    const file = pathh.split(pathh.includes('/') ? '/' : "\\")[3]
+    const path = pathh.split(pathh.includes('/') ? '/' : "\\")
+    const file = path[path.length - 1]
     console.log({ file, pathh })
     global.commands[file] = (await import('./' + pathh)).default
   })
   .on('change', async function (pathh) {
     const reload = (await import(`./${pathh}?update=${Date.now()}`)).default
-    const file = pathh.split(pathh.includes('/') ? '/' : "\\")[3]
+    const path = pathh.split(pathh.includes('/') ? '/' : "\\")
+    const file = path[path.length - 1]
     console.log(`${file} Updated`)
     global.commands[file] = reload
   })
   .on('unlink', function (pathh) {
-    const file = pathh.split(pathh.includes('/') ? '/' : "\\")[3]
+    const path = pathh.split(pathh.includes('/') ? '/' : "\\")
+    const file = path[path.length - 1]
     console.log(`deleted plugin ${file}`)
     delete global.commands[file]
   })

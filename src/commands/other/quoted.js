@@ -1,6 +1,6 @@
 export default {
     name: ['q'],
-    help: '<reply chat>',
+    help: '[reply chat]',
     cmd: ['q'],
     tag: 'other',
     async execute(m, { conn }) {

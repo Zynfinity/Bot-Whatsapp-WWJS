@@ -1,13 +1,13 @@
-import { tiktok } from '../../lib/module/downloader.js'
+import { tiktok } from '../../lib/module/tiktok.js'
 import { parseResult } from '../../lib/module/tools.js'
 
 export default {
     name: ['tiktok'],
-    help: '<url>',
+    help: '[url]',
     cmd: ['tiktok', 'tt'],
     tag: 'downloader',
     wait: true,
-    q: 'Masukkan link tiktok!',
+    eparam: 'Masukkan link tiktok!',
     async execute(m, { conn, text }) {
         const tikdown = await tiktok(text)
         const { download } = tikdown
@@ -21,7 +21,6 @@ export default {
         try {
             await conn.sendFileFromUrl(m.from, tikdown.download.nowm, { caption: await parseResult('Tiktok Downloader', tikdown, { delete: ['download'] }), quotedMessageId: m.id._serialized }, { mimetype: 'video/mp4', filename: tikdown })
         } catch (e) {
-            console.log(e.message)
             if (e.message == 'Evaluation failed: a') {
                 console.log('oke')
                 await conn.sendFileFromUrl(m.from, tikdown.download.nowm, { caption: await parseResult('Tiktok Downloader', tikdown, { delete: ['download'] }), quotedMessageId: m.id._serialized, sendMediaAsDocument: true }, { mimetype: 'video/mp4' })

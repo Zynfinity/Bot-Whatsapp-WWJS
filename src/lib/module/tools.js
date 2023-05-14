@@ -65,7 +65,7 @@ async function parseResult(title, content, option) {
             }
             for (let j of Object.entries(json[i])) {
                 if (j[1] != undefined && j[1] != null && j[1] != '') {
-                    txt += `${global.shp} *${await kapitalisasiKata(j[0].replace(/_/, ' '))}* : ${j[1]}\n`
+                    txt += `${global.shp} *${await kapitalisasiKata(j[0].replace(/_/g, ' '))}* : ${j[1]}\n`
                 }
             }
             if (i + 1 != json.length) txt += `\n${global.shp}\n`
@@ -81,7 +81,7 @@ async function parseResult(title, content, option) {
         }
         for (let i of Object.entries(json)) {
             if (i[1] != undefined && i[1] != null && i[1] != '') {
-                txt += `${global.shp} *${await kapitalisasiKata(i[0].replace(/_/, ' '))}* : ${i[1]}\n`
+                txt += `${global.shp} *${await kapitalisasiKata(i[0].replace(/_/g, ' '))}* : ${i[1]}\n`
             }
         }
         txt += `\n-`

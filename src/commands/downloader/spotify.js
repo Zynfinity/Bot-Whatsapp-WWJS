@@ -4,10 +4,10 @@ import { parseResult } from "../../lib/module/tools.js";
 import axios from "axios";
 export default {
     name: ['spotify'],
-    help: '<query/link>',
+    help: '[query/url]',
     cmd: ['spotify'],
     tag: 'downloader',
-    q: 'Masukkan kata kunci / Link spotify!',
+    eparam: 'Masukkan kata kunci / Link spotify!',
     desc: 'Mencari / mendownload lagu dari spotify',
     wait: true,
     async execute(m, { conn, text }) {

@@ -1,7 +1,7 @@
 import util from 'util'
 import chalk from 'chalk'
 import moment from "moment-timezone"
-import functions from "./function.js"
+import { func } from "./whatsapp/serialize.js"
 import { exec } from 'child_process'
 import axios from 'axios'
 import cheerio from 'cheerio'
@@ -9,7 +9,7 @@ async function handler(m, conn) {
     const prefix = '.'
     global.shp = '+'
     const tchat = await m.getChat()
-    functions(m, conn, tchat)
+    func(m, conn, tchat)
     const {
         _data,
         caption,
@@ -40,10 +40,9 @@ async function handler(m, conn) {
         token,
         isGif,
         isEphemeral,
-        links,
-        isUrl
+        links
     } = m
-    // return
+    // return console.log(m)
     const budy = (type === 'chat') ? body : (((type === 'image' || type === 'video') && body)) ? body : type === 'list_response' ? m.selectedRowId : ''
     const chats = type === 'list_response' ? m.selectedRowId : (type === 'chat' && body.startsWith(prefix)) ? body : (((type === 'image' || type === 'video') && body) && body.startsWith(prefix)) ? body : ''
     const command = chats.toLowerCase().split(" ")[0].slice(1) || ''
@@ -63,6 +62,7 @@ async function handler(m, conn) {
         conn,
         prefix
     }
+    if (!isOwner) return
     const mess = {
         wait: 'Tunggu sebentar, permintaan anda sedang diproses..',
         errorlink: 'Link tidak valid!!',
@@ -119,12 +119,26 @@ async function handler(m, conn) {
     async function sfail(m, p) {
         await m.reply(mess.fail[p]);
     };
+    function isUrl(url) {
+        return url.match(
+            new RegExp(
+                /https?:\/\/(www\.)?[-a-zA-Z0-9@:%.+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%+.~#?&/=]*)/,
+                "gi"
+            )
+        );
+    };
     if (cmd.owner && !isOwner) return sfail(m, "owner");
     if (cmd.private && tchat.isGroup) return sfail(m, "private");
     if (cmd.group && !tchat.isGroup) return sfail(m, "group");
     if (cmd.admin && !isOwner && !isAdmin) return sfail(m, "admin");
     if (cmd.botAdmin && !isBotAdmin) return sfail(m, "botAdmin");
-    if (cmd.q && !q) return m.reply(cmd.q)
+    if (cmd.eparam && !q) return m.reply(cmd.eparam)
+    if (cmd.url) {
+        if (cmd.url.regex) {
+            if (!cmd.url.regex.test(q)) return m.reply(mess.errorlink + ` (Bukan link ${cmd.name})`)
+        }
+        if (!isUrl(q)) return m.reply(mess.errorlink)
+    }
     if (cmd.wait) m.reply(mess.wait)
     try {
         await log(command)
