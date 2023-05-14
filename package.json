@@ -26,7 +26,6 @@
     "request": "^2.88.2",
     "spotify-finder": "^2.1.1",
     "syntax-error": "^1.4.0",
-    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js",
-    "yt-search": "^2.10.4"
+    "whatsapp-web.js": "github:pedroslopez/whatsapp-web.js"
   }
 }
