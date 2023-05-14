@@ -4,7 +4,7 @@ RUN apt upgrade -y
 RUN apt-get install -y --no-install-recommends \
   ffmpeg
 RUN npm install -g npm@latest
-RUN yarn add yt-search
+# RUN yarn add yt-search
 WORKDIR /home/frmdev/frmdev
 COPY package.json .
 RUN npm install

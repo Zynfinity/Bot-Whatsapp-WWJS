@@ -96,7 +96,7 @@ async function handler(m, conn) {
             await m.reply(stdout)
         })
     }
-    const cmd = await Object.values(commands).find(s => s && s.cmd.find(res => res == command))
+    const cmd = await Object.values(commands).find(s => s && !s.disabled && s.cmd.find(res => res == command))
     if (!cmd) return
 
     //check requirement
