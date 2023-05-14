@@ -9,7 +9,6 @@ export default {
     desc: 'Search and download music from youtube',
     eparam: 'Masukkan kata kunci!',
     wait: true,
-    disabled: true,
     async execute(m, { conn, text }) {
         const { title, author, url, image } = (await yts(text)).all.filter(rs => rs.type == 'video')[0]
         const caption = `${title}\n\nSource : ${url}`
